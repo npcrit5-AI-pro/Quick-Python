@@ -1,10 +1,9 @@
 # 🐍 Python Runner
 
-A lightweight, zero-dependency Python IDE with a split-pane layout — code editor on the left, output on the right.
+No setup, no dependencies, just `python main.py`.
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Dependencies](https://img.shields.io/badge/Dependencies-0-success.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
 
 ## ✨ Features
