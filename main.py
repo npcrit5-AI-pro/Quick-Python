@@ -6,12 +6,16 @@ Built with tkinter - no external dependencies required.
 """
 
 import tkinter as tk
-from tkinter import ttk, scrolledtext, simpledialog
+from tkinter import ttk, scrolledtext, simpledialog, filedialog
 import sys
 import io
 import traceback
 import threading
 import os
+import math
+import random
+import time
+import turtle
 
 
 class CustomInput:
@@ -176,21 +180,39 @@ class PythonRunner:
         # Replace input() with our GUI version
         builtins_dict['input'] = self.gui_input
         
-        try:
-            exec(code, {"__builtins__": __builtins__})
-            out = sys.stdout.getvalue()
-            err = sys.stderr.getvalue()
-            self.root.after(0, self._show_result, out, err)
-        except Exception as e:
-            err = sys.stderr.getvalue()
-            if not err:
-                err = traceback.format_exc()
-            out = sys.stdout.getvalue()
-            self.root.after(0, self._show_result, out, err)
-        finally:
-            sys.stdout = old_stdout
-            sys.stderr = old_stderr
-            builtins_dict['input'] = old_input
+        # Check if turtle is used - run on main thread to avoid conflicts
+        uses_turtle = "turtle" in code
+        
+        def run_exec():
+            try:
+                exec(code, {
+                    "__builtins__": __builtins__,
+                    "math": math,
+                    "random": random,
+                    "time": time,
+                    "turtle": turtle,
+                })
+                out = sys.stdout.getvalue()
+                err = sys.stderr.getvalue()
+                self.root.after(0, self._show_result, out, err)
+            except Exception as e:
+                err = sys.stderr.getvalue()
+                if not err:
+                    err = traceback.format_exc()
+                out = sys.stdout.getvalue()
+                self.root.after(0, self._show_result, out, err)
+            finally:
+                sys.stdout = old_stdout
+                sys.stderr = old_stderr
+                builtins_dict['input'] = old_input
+        
+        if uses_turtle:
+            # Run turtle code on main thread
+            self.root.after(0, run_exec)
+        else:
+            # Run normal code in background thread
+            t = threading.Thread(target=run_exec, daemon=True)
+            t.start()
             
     def _show_result(self, out, err):
         """Display execution results."""
