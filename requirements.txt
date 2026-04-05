@@ -1,0 +1,7 @@
+# Python Runner requires NO external dependencies!
+# It uses only Python's standard library (tkinter).
+# 
+# Python 3.8+ required (for f-strings and tkinter)
+#
+# If you want to check your Python version:
+#   python --version
